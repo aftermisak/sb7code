@@ -83,8 +83,8 @@ public:
 		printf("OpenGL实现的版本号：%s\n", OpenGLVersion);
 
 		rendering_program = compile_shaders();
-		glGenVertexArrays(1, &vertex_array_object);
-		//glCreateVertexArrays(1, &vertex_array_object);//need 4.5
+		//glGenVertexArrays(1, &vertex_array_object);
+		glCreateVertexArrays(1, &vertex_array_object);//need 4.5
 		glBindVertexArray(vertex_array_object);
 	}
 	void shutdown()
@@ -116,4 +116,4 @@ private:
 	GLuint vertex_array_object;
 };
 
-DECLARE_MAIN(my_application2_3);
+//DECLARE_MAIN(my_application2_3);

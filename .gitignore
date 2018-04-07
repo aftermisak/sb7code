@@ -13,3 +13,6 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 # end cmake
+
+/build_vs
+!/build_vs/lcx_learn

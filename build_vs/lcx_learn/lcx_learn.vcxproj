@@ -151,6 +151,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common.h" />
     <ClInclude Include="lcx_learn.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -161,6 +162,10 @@
     <ClCompile Include="list2_1.cpp" />
     <ClCompile Include="list2_2.cpp" />
     <ClCompile Include="list2_3.cpp" />
+    <ClCompile Include="list3_1.cpp" />
+    <ClCompile Include="list3_2_tessellation.cpp" />
+    <ClCompile Include="list3_3_geometry.cpp" />
+    <ClCompile Include="list5_using_uniforms_tsf_geometry.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
