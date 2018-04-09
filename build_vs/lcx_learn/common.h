@@ -17,3 +17,5 @@ bool _CheckGLError(const char* file, int line);
 #define CheckGLError() _CheckGLError(__FILE__, __LINE__)
 
 std::string getPorgramInfoLog(GLuint program);
+
+std::string getShaderInfoLog(GLuint shader);

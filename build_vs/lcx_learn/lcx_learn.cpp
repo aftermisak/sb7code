@@ -63,11 +63,20 @@ bool _CheckGLError(const char* file, int line) {
 }
 
 std::string getPorgramInfoLog(GLuint program) {
-	static const size_t ibuf_size = 4 * 1024;
-	static GLchar info[ibuf_size] = { '\0' };
-	int iLen;
-	glGetProgramInfoLog(program, ibuf_size - 1, &iLen, info);
-	info[iLen] = '\0';
+	std::string info;
+	GLint logLen;
+	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
+	info.reserve(logLen + 1);
+	glGetProgramInfoLog(program, logLen, NULL, &info[0]);
+	return info;
+}
+
+std::string getShaderInfoLog(GLuint shader) {
+	std::string info;
+	GLint logLen;
+	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
+	info.reserve(logLen + 1);
+	glGetShaderInfoLog(shader, logLen, NULL, &info[0]);
 	return info;
 }
 

@@ -19,7 +19,7 @@ public:
 		GLuint fragment_shader;
 		GLuint program;
 		static const GLchar * vertex_shader_source[] = {
-			"#version 450 core\n"
+			"#version 430 core\n"
 			"layout ( location = 0 ) in vec3 in_position;\n"
 			//"in vec4 in_position;\n"
 			"\n"
@@ -39,7 +39,7 @@ public:
 		// Source code for fragment shader
 		static const GLchar * fragment_shader_source[] =
 		{
-			"#version 450 core\n"
+			"#version 430 core\n"
 			"\n"
 			"in vec4 vs_color;\n"
 			"\n"
@@ -53,12 +53,14 @@ public:
 		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
 		glCompileShader(vertex_shader); 
+		std::cout << getShaderInfoLog(vertex_shader) << std::endl;
 		CheckGLError();
 
 		// Create and compile fragment shader
 		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
 		glCompileShader(fragment_shader); 
+		std::cout << getShaderInfoLog(fragment_shader) << std::endl;
 		CheckGLError();
 
 		// Create program, attach shaders to it, and link it
@@ -84,7 +86,7 @@ public:
 		freopen("conout$", "r", stdin);
 		printGPUInfo();
 
-		glEnable(GL_DEBUG_OUTPUT);
+		//glEnable(GL_DEBUG_OUTPUT);
 		//glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
 		rendering_program = compile_shaders();
 
@@ -212,4 +214,4 @@ private:
 	GLint proj_location;
 };
 
-//DECLARE_MAIN(my_application5_uutg);
+DECLARE_MAIN(my_application5_uutg);
