@@ -59,6 +59,7 @@ bool _CheckGLError(const char* file, int line) {
 	}
 	if (!ret)
 		std::cout << "_____________________________GL_ check end_____________________________" << std::endl;
+	
 	return ret;
 }
 

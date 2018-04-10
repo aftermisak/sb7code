@@ -214,4 +214,4 @@ private:
 	GLint proj_location;
 };
 
-DECLARE_MAIN(my_application5_uutg);
+//DECLARE_MAIN(my_application5_uutg);
