@@ -3,7 +3,9 @@
 
 #include "lcx_learn.h"
 #include "common.h"
+#include "cstdio"
 #include <iostream>
+#include <strstream>
 
 void MessageCallback(GLenum source,
 	GLenum type,
@@ -79,6 +81,28 @@ std::string getShaderInfoLog(GLuint shader) {
 	info.reserve(logLen + 1);
 	glGetShaderInfoLog(shader, logLen, NULL, &info[0]);
 	return info;
+}
+
+std::string loadFileContentAsString(const std::string& path) {
+	auto pf = fopen(path.c_str(), "r");
+	if (pf == NULL) {
+		return "";
+	}
+
+	//std::strstream strio;
+	std::string finalstr;
+	char buff[65535];
+	while (!feof(pf)) {
+		memset(buff, 0, sizeof(buff));
+		fgets(buff, sizeof(buff), pf);
+		std::string str(buff);
+		//strio << str;
+		finalstr += str;
+	}
+	
+	fclose(pf);
+	//return strio.str();
+	return finalstr;
 }
 
 //#include "list2_1.cpp"

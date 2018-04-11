@@ -19,3 +19,5 @@ bool _CheckGLError(const char* file, int line);
 std::string getPorgramInfoLog(GLuint program);
 
 std::string getShaderInfoLog(GLuint shader);
+
+std::string loadFileContentAsString( const std::string& path );

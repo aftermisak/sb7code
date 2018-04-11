@@ -68,6 +68,12 @@
     <ClCompile Include="list7_1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="list7_2_indirect_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="list7_3_feedback_physics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lcx_learn.rc">

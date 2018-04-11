@@ -249,7 +249,7 @@ public:
 
 		glUseProgram(rendering_program);
 		glUniformMatrix4fv(proj_location, 1, GL_FALSE, proj_matrix);
-		const auto drawcount = 12400;
+		const auto drawcount = 24;
 		for (int i = 0; i < drawcount; ++i) {
 			float f = (float)i + (float)currentTime * 0.3f;
 			vmath::mat4 mv_matrix =
@@ -260,7 +260,7 @@ public:
 					cosf(1.7f * f) * 2.0f,
 					sinf(1.3f * f) * cosf(1.5f * f) * 2.0f);
 			glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);//最后一个参数是buffer 偏移的意思...
 			
 			//glDrawElementsInstanced( GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0, drawcount );
 			//glDrawElementsInstancedBaseVertex(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0, drawcount, 0);
@@ -281,4 +281,4 @@ private:
 	GLint proj_location;
 };
 
-DECLARE_MAIN(my_application7_1);
+//DECLARE_MAIN(my_application7_1);
