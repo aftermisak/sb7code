@@ -1,6 +1,9 @@
-
-// Include the "sb7.h" header file
 #include "sb7.h"
+#include "vmath.h"
+#include "sb7color.h"
+#include "object.h"
+#include <cassert>
+#include <vector>
 #include "common.h"
 #include <iostream>
 

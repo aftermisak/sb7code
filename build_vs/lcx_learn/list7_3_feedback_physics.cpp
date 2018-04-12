@@ -66,10 +66,17 @@ public:
 		glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
 
 		program = this->compile_shaders();
-		vm_location = glGetUniformLocation(program, "view_matrix");
-		pm_location = glGetUniformLocation(program, "proj_matrix");
-		assert(vm_location != -1);
-		assert(pm_location != -1);
+		//vm_location = glGetUniformLocation(program, "view_matrix");assert(vm_location != -1);
+		//pm_location = glGetUniformLocation(program, "proj_matrix");assert(pm_location != -1);
+		rest_len_location = glGetUniformLocation(program, "resting_len"); assert(rest_len_location != -1);
+		for_calculate_location = glGetUniformLocation(program, "for_calculate"); assert(for_calculate_location != -1);
+
+		static const char* feed_back_varyings[] = {
+			"tf_position_weight", "tf_velocity"
+		};
+		glTransformFeedbackVaryings(program, sizeof( feed_back_varyings )/sizeof(feed_back_varyings[0]), 
+			feed_back_varyings, GL_SEPARATE_ATTRIBS); CheckGLError();
+		glLinkProgram(program); CheckGLError();
 
 		vmath::vec4* initial_position = new vmath::vec4[POINTS_TOTAL];//{position.xyz, weight}
 		vmath::vec3* initial_velocitys = new vmath::vec3[POINTS_TOTAL];
@@ -87,6 +94,9 @@ public:
 				connection_vectors[index][3] = j != 0 ? index-1 : -1; //left
 			}
 		}
+		vmath::vec3 p1 = vmath::vec3(initial_position[0][0], initial_position[0][1], initial_position[0][2]);
+		vmath::vec3 p2 = vmath::vec3(initial_position[1][0], initial_position[1][1], initial_position[1][2]);
+		rest_len = vmath::length(p1 - p2);
 		//auto a = std::vector<vmath::vec4>(initial_position, initial_position + POINTS_TOTAL);
 		//auto b = std::vector<vmath::vec3>(initial_velocitys, initial_velocitys + POINTS_TOTAL);
 		//auto c = std::vector<vmath::ivec4>(connection_vectors, connection_vectors + POINTS_TOTAL);
@@ -114,10 +124,25 @@ public:
 			glVertexAttribIPointer(2, 4, GL_INT, 0, NULL);
 			glEnableVertexAttribArray(2);
 			CheckGLError();
+
 		}
 		delete[] initial_position;
 		delete[] initial_velocitys;
 		delete[] connection_vectors;
+
+		glGenTextures(2, posTexture);
+		glBindTexture(GL_TEXTURE_BUFFER, posTexture[0]);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, vbo[VBO_P1_A]);
+		glBindTexture(GL_TEXTURE_BUFFER, posTexture[1]);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, vbo[VBO_P2_A]);
+
+		//glGenBuffers(1, &fbBuffer);
+		//glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 0, fbBuffer, 0, sizeof(vmath::vec4)*POINTS_TOTAL);
+		//glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, sizeof(vmath::vec4)*POINTS_TOTAL, NULL, GL_DYNAMIC_COPY);
+		//glBindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 1, fbBuffer, sizeof(vmath::vec4)*POINTS_TOTAL, sizeof(vmath::vec3)*POINTS_TOTAL);
+		//glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, sizeof(vmath::vec3)*POINTS_TOTAL, NULL, GL_DYNAMIC_COPY);
+
+		CheckGLError();
 
 		updateProjMatrix();
 	}
@@ -146,28 +171,55 @@ public:
 
 		view_matrix = vmath::lookat(vmath::vec3(0.0f), vmath::vec3(0.0f, 0.0f, 1.0f), vmath::vec3( 0.0f, 1.0f, 0.0f ));
 		
-		glPointSize(10.0);
+		glPointSize(3.0);
 
 		glUseProgram(program);
-
-		glUniformMatrix4fv(vm_location, 1, GL_FALSE, view_matrix);
-		glUniformMatrix4fv(pm_location, 1, GL_FALSE, proj_matrix);
-
-		glBindVertexArray(vao[0]);
+		glUniform1f(rest_len_location, rest_len);
+		{
+			glEnable(GL_RASTERIZER_DISCARD);//disable rasterizer
+			glBindVertexArray(vao[0]);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, vbo[VBO_P2_A]);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, vbo[VBO_V2_A]);
+			glBeginTransformFeedback(GL_POINTS);
+			glUniform1i(for_calculate_location, 0);
+			glDrawArrays(GL_POINTS, 0, POINTS_TOTAL);
+			glEndTransformFeedback();
+		}
+		{
+			glDisable(GL_RASTERIZER_DISCARD);
+			glBindVertexArray(vao[1]);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, vbo[VBO_P1_A]);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, vbo[VBO_V1_A]);
+			glBeginTransformFeedback(GL_POINTS);
+			//glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, fbBuffer);
+			//glBindBuffer(GL_ARRAY_BUFFER, vbo[VBO_P2_A]);
+			//glCopyBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, GL_ARRAY_BUFFER, 0, 0, sizeof(vmath::vec4)*POINTS_TOTAL);
+			//glCopyNamedBufferSubData(fbBuffer, vbo[VBO_P2_A], 0, 0, sizeof(vmath::vec4)*POINTS_TOTAL);
+			//glBindBuffer(GL_ARRAY_BUFFER, vbo[VBO_V2_A]);
+			//glCopyBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, GL_ARRAY_BUFFER, sizeof(vmath::vec4)*POINTS_TOTAL, 0, sizeof(vmath::vec3)*POINTS_TOTAL);
+			//glCopyNamedBufferSubData(fbBuffer, vbo[VBO_V2_A], sizeof(vmath::vec4)*POINTS_TOTAL, 0, sizeof(vmath::vec3)*POINTS_TOTAL);
+			glUniform1i(for_calculate_location, 1);
+			glDrawArrays(GL_POINTS, 0, POINTS_TOTAL);
+			glEndTransformFeedback();
+		}
 		
-		glDrawArrays(GL_POINTS, 0, POINTS_TOTAL);
-		//glDrawArrays(GL_TRIANGLES, 0, POINTS_TOTAL);
+		
 	}
 	
 private:
 	GLuint program;
 	GLuint vao[2];
 	GLuint vbo[5];
+	GLuint posTexture[2];
+	//GLuint fbBuffer;
 
 	GLint vm_location;
 	GLint pm_location;
+	GLint rest_len_location;
+	GLint for_calculate_location;
 	vmath::mat4 view_matrix;
 	vmath::mat4 proj_matrix;
+	float rest_len;
 
 	constexpr static int VBO_P1_A = 0;
 	constexpr static int VBO_P2_A = 1;
@@ -176,4 +228,4 @@ private:
 	constexpr static int VBO_CONN = 4;
 };
 
-DECLARE_MAIN(my_application7_3);
+//DECLARE_MAIN(my_application7_3);

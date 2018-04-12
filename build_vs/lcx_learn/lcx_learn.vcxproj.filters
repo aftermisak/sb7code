@@ -74,6 +74,9 @@
     <ClCompile Include="list7_3_feedback_physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="list8_1_tessel_quads.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lcx_learn.rc">
