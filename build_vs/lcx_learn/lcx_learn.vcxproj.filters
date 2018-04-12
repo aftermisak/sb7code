@@ -27,13 +27,13 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lcx_learn.h">
+    <ClInclude Include="..\..\src\lcx_learn\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
+    <ClInclude Include="..\..\src\lcx_learn\common_nonsense.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common_nonsense.hpp">
+    <ClInclude Include="..\..\src\lcx_learn\lcx_learn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,40 +41,40 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lcx_learn.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\lcx_learn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list2_1.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list2_1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list2_2.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list2_2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list2_3.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list2_3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list3_1.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list3_1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list3_2_tessellation.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list3_2_tessellation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list3_3_geometry.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list3_3_geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list5_using_uniforms_tsf_geometry.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list5_using_uniforms_tsf_geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list7_1.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list7_1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list7_2_indirect_draw.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list7_2_indirect_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list7_3_feedback_physics.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list7_3_feedback_physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="list8_1_tessel_quads.cpp">
+    <ClCompile Include="..\..\src\lcx_learn\list8_1_tessel_quads.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
