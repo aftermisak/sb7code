@@ -1,4 +1,4 @@
-#version 450 core
+#version 430 core
 layout(vertices = 4) out;
 void main(void)
 {

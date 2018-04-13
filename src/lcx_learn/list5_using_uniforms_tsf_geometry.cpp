@@ -76,6 +76,10 @@ public:
 		return program;
 	}
 
+	void init() override {
+		sb7::application::init();
+		info.flags.debug = 1;
+	}
 	
 
 	void startup() override
@@ -86,8 +90,8 @@ public:
 		freopen("conout$", "r", stdin);
 		printGPUInfo();
 
-		//glEnable(GL_DEBUG_OUTPUT);
-		//glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
 		rendering_program = compile_shaders();
 
 		mv_location = glGetUniformLocation(rendering_program, "mv_matrix"); CheckGLError();
@@ -141,22 +145,30 @@ public:
 		}
 		
 		GLuint arrayBuffer;
-		//glCreateBuffers(1, &arrayBuffer);
+		//glCreateBuffers(1, &arrayBuffer);//opengl 4.5
 		glGenBuffers(1, &arrayBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, arrayBuffer);
-
-		//glBufferStorage(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3, vertex_positions, 0);
-		//CheckGLError();
-		//glVertexArrayVertexBuffer(vertex_array_object, 0, arrayBuffer, 0, sizeof(GLfloat) * 3);
-		//glVertexArrayAttribFormat(vertex_array_object, 0, 3, GL_FLOAT, GL_TRUE, 0);
-		//glVertexArrayAttribBinding(vertex_array_object, 0, 0);
-		//CheckGLError();
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(0u, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		if (true) {
+			glBufferStorage(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_DYNAMIC_STORAGE_BIT);//opengl 4.4 会分配空间
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertex_positions), vertex_positions);// opengl 2.0 need buffer GL_DYNAMIC_STORAGE_BIT
+			//glNamedBufferSubData(arrayBuffer, 0, sizeof(vertex_positions), vertex_positions);//opengl 4.5, 很多named版本都需要4.5
+		}
+		else {
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);// opengl 2.0, 会分配空间
+		}
 		CheckGLError();
 
-		glEnableVertexAttribArray(0u);
+		if ( 0 ) {
+			glVertexArrayVertexBuffer(vertex_array_object, 0, arrayBuffer, 0, 0);//need opengl 4.5
+			glVertexArrayAttribFormat(vertex_array_object, 0, 3, GL_FLOAT, GL_FALSE, 0);//need opengl 4.5
+			glVertexArrayAttribBinding(vertex_array_object, 0, 0);//need opengl 4.5
+		}
+		else {
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		}
+		CheckGLError();
+
+		glEnableVertexAttribArray(0);
 
 		float aspect = (float)info.windowWidth / (float)info.windowHeight;
 		proj_matrix = vmath::perspective(50.0f, aspect, 0.1f, 1000.0f);

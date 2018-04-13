@@ -1,4 +1,4 @@
-#version 430 core;
+#version 430 core
 
 layout( location = 1 ) in vec3 position;
 

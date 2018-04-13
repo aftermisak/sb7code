@@ -6,6 +6,7 @@
 #include "cstdio"
 #include <iostream>
 #include <strstream>
+#include <unordered_map>
 
 void MessageCallback(GLenum source,
 	GLenum type,
@@ -15,7 +16,18 @@ void MessageCallback(GLenum source,
 	const GLchar* message,
 	const void* userParam)
 {
-	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+	std::unordered_map<int, std::string> source_map = {
+		{ GL_DEBUG_SOURCE_API, "GL_DEBUG_SOURCE_API" },
+		{ GL_DEBUG_SOURCE_SHADER_COMPILER, "GL_DEBUG_SOURCE_SHADER_COMPILER" },
+		{ GL_DEBUG_SOURCE_WINDOW_SYSTEM, "GL_DEBUG_SOURCE_WINDOW_SYSTEM" },
+		{ GL_DEBUG_SOURCE_THIRD_PARTY, "GL_DEBUG_SOURCE_THIRD_PARTY" },
+		{ GL_DEBUG_SOURCE_APPLICATION, "GL_DEBUG_SOURCE_APPLICATION" },
+		{ GL_DEBUG_SOURCE_OTHER, "GL_DEBUG_SOURCE_OTHER" }
+	};
+	std::string sroucestr = source_map.find(source) != source_map.end() ? source_map.find(source)->second : "unknow source";
+
+	fprintf(stderr, "GL CALLBACK: source = '%s' %s type = 0x%x, severity = 0x%x, message = %s\n",
+		sroucestr.c_str(),
 		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
 		type, severity, message);
 	fflush(stderr);
