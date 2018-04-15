@@ -16,3 +16,4 @@ CTestTestfile.cmake
 
 /build_vs/*
 !lcx_learn/
+/build_vs/lcx_learn/media

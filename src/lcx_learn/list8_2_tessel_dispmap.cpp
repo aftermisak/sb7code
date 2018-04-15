@@ -96,6 +96,9 @@ public:
 		glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
 		rendering_program = compile_shaders();
 
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
 		mvp_matrix_loc = glGetUniformLocation(rendering_program, "mvp_matrix");
 		tex_disp_loc = glGetUniformLocation(rendering_program, "tex_displacement");
 
@@ -114,6 +117,8 @@ public:
 
 		float aspect = (float)info.windowWidth / (float)info.windowHeight;
 		projMatrix = vmath::perspective(50.0f, aspect, 0.1f, 1000.0f);
+
+		glBindVertexArray(0);
 	}
 	void shutdown()
 	{
@@ -137,13 +142,18 @@ public:
 		glClearBufferfv(GL_COLOR, 0, color);
 		glClearBufferfi(GL_DEPTH_STENCIL, 0, 0.0f, 0);
 
+		glBindVertexArray(vao);
 		glUseProgram(rendering_program);
 		auto mvpM = projMatrix * viewMatrix * vmath::mat4(1.0f); 
 		glUniformMatrix4fv(mvp_matrix_loc, 1, GL_FALSE, mvpM);
+		for (int i = 0; i < 64 * 64; ++i) {
+			glDrawArraysInstanced(GL_PATCHES, 0, 4, 64 * 64); 
+		}
+		CheckGLError();
 		
-		glDrawArraysInstanced(GL_PATCHES, 0, 4, 64 * 64); CheckGLError();
 	}
 private:
+	GLuint vao;
 	GLuint tex_displacement;
 	GLuint tex_color;
 
