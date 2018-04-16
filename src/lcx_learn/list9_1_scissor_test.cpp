@@ -7,7 +7,7 @@
 #include <iostream>
 
 // Derive my_application from sb7::application
-class my_application8_2 : public sb7::application
+class my_application9_1: public sb7::application
 {
 public:
 
@@ -16,25 +16,14 @@ public:
 	{
 		GLuint vertex_shader;
 		GLuint fragment_shader;
-		GLuint tsctl_shader;
-		GLuint tsevl_shader;
 		GLuint program;
 
-		std::string str_vs = loadFileContentAsString("glsls/list8_2_ts_dispmap_vs.glsl");
+		std::string str_vs = loadFileContentAsString("glsls/list9_1_scissor_test_vs.glsl");
 		static const GLchar * vs[] = {
 			str_vs.c_str()
 		};
 
-		std::string str_tcs = loadFileContentAsString("glsls/list8_2_ts_dispmap_tcs.glsl");
-		static const GLchar* tcs[] = {
-			str_tcs.c_str()
-		};
-		std::string str_tes = loadFileContentAsString("glsls/list8_2_ts_dispmap_tes.glsl");
-		static const GLchar* tes[] = {
-			str_tes.c_str()
-		};
-
-		std::string str_fs = loadFileContentAsString("glsls/list8_2_ts_dispmap_fs.glsl");
+		std::string str_fs = loadFileContentAsString("glsls/list9_1_scissor_test_fs.glsl");
 		static const GLchar * fs[] =
 		{
 			str_fs.c_str()
@@ -44,20 +33,6 @@ public:
 		glShaderSource(vertex_shader, 1, vs, NULL);
 		glCompileShader(vertex_shader);
 		std::cout << getShaderInfoLog(vertex_shader) << std::endl;
-		CheckGLError();
-
-		// create tessellation control shader
-		tsctl_shader = glCreateShader(GL_TESS_CONTROL_SHADER);
-		glShaderSource(tsctl_shader, 1, tcs, NULL);
-		glCompileShader(tsctl_shader);
-		std::cout << getShaderInfoLog(tsctl_shader) << std::endl;
-		CheckGLError();
-
-		//create tessellation evaluation shader
-		tsevl_shader = glCreateShader(GL_TESS_EVALUATION_SHADER);
-		glShaderSource(tsevl_shader, 1, tes, NULL);
-		glCompileShader(tsevl_shader);
-		std::cout << getShaderInfoLog(tsevl_shader) << std::endl;
 		CheckGLError();
 
 		// Create and compile fragment shader
@@ -70,15 +45,11 @@ public:
 		// Create program, attach shaders to it, and link it
 		program = glCreateProgram();
 		glAttachShader(program, vertex_shader);
-		glAttachShader(program, tsctl_shader); CheckGLError();
-		glAttachShader(program, tsevl_shader); CheckGLError();
 		glAttachShader(program, fragment_shader);
 		glLinkProgram(program);
 		std::cout << getPorgramInfoLog(program) << std::endl;
 		// Delete the shaders as the program has them now
 		glDeleteShader(vertex_shader);
-		glDeleteShader(tsctl_shader);
-		glDeleteShader(tsevl_shader);
 		glDeleteShader(fragment_shader);
 		CheckGLError();
 		return program;
@@ -98,27 +69,27 @@ public:
 
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
-
-		mvp_matrix_loc = glGetUniformLocation(rendering_program, "mvp_matrix");
-		tex_disp_loc = glGetUniformLocation(rendering_program, "tex_displacement");
-
-
-		glPatchParameteri(GL_PATCH_VERTICES, 4); CheckGLError();
-
-		glActiveTexture(GL_TEXTURE0);
-		tex_displacement = sb7::ktx::file::load("media/textures/terragen1.ktx");
-		glActiveTexture(GL_TEXTURE1);
-		tex_color = sb7::ktx::file::load("media/textures/terragen_color.ktx");
-
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		//GLuint vbo;
+		//glGenBuffers(1, &vbo);
+		//glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		//const GLfloat pos[] = {
+		//	0.0f, 0.0f, 0.0f,
+		//	0.5f, 0.0f, 0.0f,
+		//	0.0f, 0.5f, 0.0f,
+		//};
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(pos), pos, GL_STATIC_DRAW);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		//glEnableVertexAttribArray(0);
+		glBindVertexArray(0);
 
 		float aspect = (float)info.windowWidth / (float)info.windowHeight;
 		projMatrix = vmath::perspective(50.0f, aspect, 0.1f, 1000.0f);
 
-		glBindVertexArray(0);
+
+		//glViewportIndexedf(0, 0, 0, 400, 300);
+		//glViewportIndexedf(1, 400, 300, 400, 300);
+		CheckGLError();
+
 	}
 	void shutdown()
 	{
@@ -139,26 +110,40 @@ public:
 		const GLfloat color[] = { (float)sin(currentTime) * 0.5f + 0.5f,
 			(float)cos(currentTime) * 0.5f + 0.5f,
 			0.0f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, color);
-		glClearBufferfi(GL_DEPTH_STENCIL, 0, 0.0f, 0);
 
-		glBindVertexArray(vao);
-		glUseProgram(rendering_program);
-		auto mvpM = projMatrix * viewMatrix * vmath::mat4(1.0f); 
-		glUniformMatrix4fv(mvp_matrix_loc, 1, GL_FALSE, mvpM);
-		for (int i = 0; i < 64 * 64; ++i) {
-			glDrawArraysInstanced(GL_PATCHES, 0, 4, 64 * 64); 
-		}
-		CheckGLError();
+		glDisable(GL_SCISSOR_TEST);// end frame, we'd better disbale scissor test
+		glClearBufferfv(GL_COLOR, 0, color);
 		
+
+		glEnable(GL_SCISSOR_TEST);
+		//glEnablei(GL_SCISSOR_TEST, 0);
+		//glEnablei(GL_SCISSOR_TEST, 1);
+		
+		glScissorIndexed(0, 0, 0, 200, 100);
+		glScissorIndexed(1, 400, 300, 100, 200);
+
+		glUseProgram(rendering_program);
+		glBindVertexArray(vao);
+		glPointSize(4.0);
+		for (int v = 0; v < 2; ++v) {
+			
+			if (v == 0) {
+				glViewportIndexedf(0, 0, 0, 300, 200);
+				//glScissor(0, 0, 200, 100);
+				//glViewport(0, 0, 400, 300);
+			}
+			else {
+				glViewportIndexedf(1, 400, 300, 400, 300);
+				//glScissor(400, 300, 100, 200);
+				//glViewport(400, 300, 400, 300);
+			}
+			for (int i = 0; i < 32 * 32; ++i) {
+				glDrawArraysInstanced(GL_POINTS, 0, 1, 32 * 32);
+			}
+		}	
 	}
 private:
 	GLuint vao;
-	GLuint tex_displacement;
-	GLuint tex_color;
-
-	GLint mvp_matrix_loc;
-	GLint tex_disp_loc;
 
 	vmath::mat4 viewMatrix;
 	vmath::mat4 projMatrix;
@@ -166,4 +151,4 @@ private:
 	GLuint rendering_program;
 };
 
-//DECLARE_MAIN(my_application8_2);
+//DECLARE_MAIN(my_application9_1);

@@ -80,6 +80,12 @@
     <ClCompile Include="..\..\src\lcx_learn\list8_2_tessel_dispmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lcx_learn\list9_1_scissor_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lcx_learn\list9_2_stencil_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lcx_learn.rc">

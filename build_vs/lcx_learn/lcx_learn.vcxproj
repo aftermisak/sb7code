@@ -172,6 +172,8 @@
     <ClCompile Include="..\..\src\lcx_learn\list7_3_feedback_physics.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list8_1_tessel_quads.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list8_2_tessel_dispmap.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_1_scissor_test.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_2_stencil_test.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
