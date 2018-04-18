@@ -2,15 +2,14 @@
 // Include the "sb7.h" header file
 
 #include "sb7.h"
-
-
+#include "sb7color.h"
 #include "common.h"
 #include "vmath.h"
 #include "sb7ktx.h"
 #include <iostream>
 
 // Derive my_application from sb7::application
-class my_application9_2 : public sb7::application
+class my_application9_7_1 : public sb7::application
 {
 public:
 
@@ -21,12 +20,12 @@ public:
 		GLuint fragment_shader;
 		GLuint program;
 
-		std::string str_vs = loadFileContentAsString("glsls/list9_2_stencil_test_vs.glsl");
+		std::string str_vs = loadFileContentAsString("glsls/list9_7_1_vs.glsl");
 		static const GLchar * vs[] = {
 			str_vs.c_str()
 		};
 
-		std::string str_fs = loadFileContentAsString("glsls/list9_2_stencil_test_fs.glsl");
+		std::string str_fs = loadFileContentAsString("glsls/list9_7_1_fs.glsl");
 		static const GLchar * fs[] =
 		{
 			str_fs.c_str()
@@ -37,7 +36,7 @@ public:
 		glCompileShader(vertex_shader);
 		std::cout << getShaderInfoLog(vertex_shader) << std::endl;
 		CheckGLError();
-
+		
 		// Create and compile fragment shader
 		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment_shader, 1, fs, NULL);
@@ -58,6 +57,11 @@ public:
 		return program;
 	}
 
+	void init() override {
+		sb7::application::init();
+
+	}
+
 	void startup()
 	{
 		AllocConsole();
@@ -68,41 +72,51 @@ public:
 
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback((GLDEBUGPROC)MessageCallback, NULL);
+
+
 		rendering_program = compile_shaders();
 
+		uniloc_vm = glGetUniformLocation(rendering_program, "viewMatrix"); CheckGLError();
+		uniloc_pm = glGetUniformLocation(rendering_program, "projMatrix"); CheckGLError();
+		uniloc_time = glGetUniformLocation(rendering_program, "time"); CheckGLError();
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
-		//GLuint vbo;
-		//glGenBuffers(1, &vbo);
-		//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		//const GLfloat pos[] = {
-		//	0.0f, 0.0f, 0.0f,
-		//	0.5f, 0.0f, 0.0f,
-		//	0.0f, 0.5f, 0.0f,
-		//};
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(pos), pos, GL_STATIC_DRAW);
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		//glEnableVertexAttribArray(0);
+		GLuint vbo;
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		pointCount = 200;
+		vmath::vec3* pos = new vmath::vec3 [pointCount];
+		for (decltype(pointCount) i = 0; i < pointCount; ++i) {
+			pos[i][0] = vmath::random<float>();
+			pos[i][1] = vmath::random<float>();
+			pos[i][2] = vmath::random<float>();
+		}
+		glBufferData(GL_ARRAY_BUFFER, sizeof(pos[0])*pointCount, pos, GL_STATIC_DRAW);
+		delete[] pos;
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(0);
+		const GLfloat color[] = {
+			1.0f, 1.0f, 1.0f, 1.0f,
+		};
+		GLuint vbo_color;
+		glGenBuffers(1, &vbo_color);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(1);
+
+		
+		glActiveTexture(GL_TEXTURE0);
+		GLuint vbo_star = sb7::ktx::file::load("media/textures/star.ktx");
+
 		glBindVertexArray(0);
 
 		float aspect = (float)info.windowWidth / (float)info.windowHeight;
 		projMatrix = vmath::perspective(50.0f, aspect, 0.1f, 1000.0f);
 
-
-		glEnable(GL_STENCIL_TEST);
-
-		GLint stencilBits = 0;
-
-		std::cout << "stencil buffer bit : " << stencilBits << std::endl;
-		
-		glClearStencil(1);
-		//glStencilFunc(GL_NEVER, 0, 0x0000u);
-		//glStencilFunc(GL_ALWAYS, 0, 0x0000u);
-		glStencilFunc(GL_EQUAL, 0x0001, 0x00ffu);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
+		glEnable(GL_PROGRAM_POINT_SIZE);
 		CheckGLError();
-		
+
 	}
 	void shutdown()
 	{
@@ -118,40 +132,36 @@ public:
 	// Our rendering function
 	void render(double currentTime)
 	{
-		viewMatrix = vmath::lookat(vmath::vec3(0.0f, 10.0f, 10.0f), vmath::vec3(0.0f, 0.0f, 0.0f), vmath::vec3(-1.0f, -1.0f, -1.0f));
+		static const float one = 1.0f;
+		viewMatrix = vmath::lookat(vmath::vec3(0.0f, 0.0f, 1.0f), vmath::vec3(0.0f, 0.0f, 0.0f), vmath::vec3(0.0f, 1.0f, 0.0f));
 
-		const GLfloat color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, color);
+		float f = (float)currentTime;
 
-		glPointSize(3.0f);
+
+		glClearBufferfv(GL_COLOR, 0, sb7::color::Black);
+		glClearBufferfv(GL_DEPTH, 0, &one);
+
 		glUseProgram(rendering_program);
 		glBindVertexArray(vao);
-		const static auto ins_count = 1000;
-		for (int insi = 0; insi < ins_count; ++insi) {
-			const GLfloat pos[] = {
-				vmath::random<float>(),
-				vmath::random<float>(),
-				0.0f,
-			};
-			const GLfloat color[] = {
-				vmath::random<float>(),
-				vmath::random<float>(),
-				vmath::random<float>(),
-				vmath::random<float>(),
-			};
-			glVertexAttrib3fv(0, pos);
-			glVertexAttrib3fv(1, color);
-			glDrawArraysInstanced(GL_POINTS, 0, 1, ins_count);
-		}
-		
+		glUniformMatrix4fv(uniloc_vm, 1, GL_FALSE, viewMatrix);
+		glUniformMatrix4fv(uniloc_pm, 1, GL_FALSE, projMatrix);
+		glUniform1fv(uniloc_time, 1, &f);
+		glDrawArrays(GL_POINTS, 0, pointCount);
+
 	}
 private:
 	GLuint vao;
+
+	GLint uniloc_vm;
+	GLint uniloc_pm;
+	GLint uniloc_time;
 
 	vmath::mat4 viewMatrix;
 	vmath::mat4 projMatrix;
 
 	GLuint rendering_program;
+
+	size_t pointCount;
 };
 
-//DECLARE_MAIN(my_application9_2);
+//DECLARE_MAIN(my_application9_7_1);

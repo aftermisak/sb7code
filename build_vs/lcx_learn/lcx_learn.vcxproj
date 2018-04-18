@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lcx_learn\lcx_learn.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list10_1.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list2_1.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list2_2.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list2_3.cpp" />
@@ -174,6 +175,10 @@
     <ClCompile Include="..\..\src\lcx_learn\list8_2_tessel_dispmap.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list9_1_scissor_test.cpp" />
     <ClCompile Include="..\..\src\lcx_learn\list9_2_stencil_test.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_4_1_offscreen.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_5_1_centroid_sampling.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_7_1_point_sprites.cpp" />
+    <ClCompile Include="..\..\src\lcx_learn\list9_8_1_screenshot.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
